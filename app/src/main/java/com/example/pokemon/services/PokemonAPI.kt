@@ -17,8 +17,8 @@ interface PokemonAPI {
         @Query("limit") limit: Int = POKEMON_DISPLAY_LIMIT
     ) : Response<PokemonResponse>
 
-    @GET("pokemon/{id}")
+    @GET("pokemon/{name}")
     suspend fun fetchPokemonDetails(
-        @Path("id") id: Int
+        @Path("name") name: String
     ) : Response<PokemonDetails>
 }
