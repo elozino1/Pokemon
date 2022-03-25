@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat.getColor
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -61,6 +62,7 @@ class PokemonListAdapter : RecyclerView.Adapter<PokemonListAdapter.PokemonListVi
 
         val imageCardView = holder.imageCardView
 
+        //load pokemon into imageView and apply colour to cardView from pokemon image
         Glide.with(holder.itemView)
             .asBitmap()
             .load("https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${imageId}.png")
@@ -80,16 +82,21 @@ class PokemonListAdapter : RecyclerView.Adapter<PokemonListAdapter.PokemonListVi
                     isFirstResource: Boolean
                 ): Boolean {
                     if (resource != null) {
-                        Palette.from(resource).generate { palette ->
+                        Palette.from(resource).maximumColorCount(8).generate { palette ->
                             val darkVibrantSwatch = palette!!.darkVibrantSwatch
                             val dominantSwatch = palette.dominantSwatch
                             val lightVibrantSwatch = palette.lightVibrantSwatch
-                            if (darkVibrantSwatch != null) {
+                            if(darkVibrantSwatch != null) {
                                 imageCardView.setCardBackgroundColor(darkVibrantSwatch.rgb)
-                            } else if (dominantSwatch != null) {
+                            } else if(dominantSwatch != null) {
                                 imageCardView.setCardBackgroundColor(dominantSwatch.rgb)
                             } else {
                                 imageCardView.setCardBackgroundColor(lightVibrantSwatch!!.rgb)
+                            }
+                            val vibrant = palette.dominantSwatch
+                            if(vibrant != null) {
+                                pokemonNameText.setTextColor(vibrant.bodyTextColor)
+                                pokemonNumberText.setTextColor(vibrant.bodyTextColor)
                             }
                         }
                     }
