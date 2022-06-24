@@ -9,4 +9,9 @@ class PokemonRepository(
 
     suspend fun fetchPokemon(offset: Int, limit: Int) =
         RetrofitInstance.api.fetchPokemon(offset, limit)
+
+    suspend fun fetchPokemonDetails(number: Int) =
+        RetrofitInstance.api.fetchPokemonDetails(number)
+
+
 }

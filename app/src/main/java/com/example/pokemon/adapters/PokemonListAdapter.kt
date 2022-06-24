@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.content.ContextCompat.getColor
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
@@ -19,15 +18,27 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.example.pokemon.R
 import com.example.pokemon.models.PokemonResult
-import org.w3c.dom.Text
 
-class PokemonListAdapter : RecyclerView.Adapter<PokemonListAdapter.PokemonListViewHolder>() {
+class PokemonListAdapter(
+    private val listener: IOnItemClickListener
+) : RecyclerView.Adapter<PokemonListAdapter.PokemonListViewHolder>() {
 
-    inner class PokemonListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PokemonListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         var pokemonName: TextView = itemView.findViewById(R.id.pokemon_list_text)
         var pokemonImage: ImageView = itemView.findViewById(R.id.pokemon_list_image)
         var pokemonNumber: TextView = itemView.findViewById(R.id.pokemon_list_number)
         var imageCardView: CardView = itemView.findViewById(R.id.image_card_view)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onClick(view: View?) {
+            val position = adapterPosition
+            if(position != RecyclerView.NO_POSITION) {
+                listener.onItemClick(position)
+            }
+        }
     }
 
     private val differCallBack = object: DiffUtil.ItemCallback<PokemonResult>() {
@@ -86,12 +97,16 @@ class PokemonListAdapter : RecyclerView.Adapter<PokemonListAdapter.PokemonListVi
                             val darkVibrantSwatch = palette!!.darkVibrantSwatch
                             val dominantSwatch = palette.dominantSwatch
                             val lightVibrantSwatch = palette.lightVibrantSwatch
-                            if(darkVibrantSwatch != null) {
-                                imageCardView.setCardBackgroundColor(darkVibrantSwatch.rgb)
-                            } else if(dominantSwatch != null) {
-                                imageCardView.setCardBackgroundColor(dominantSwatch.rgb)
-                            } else {
-                                imageCardView.setCardBackgroundColor(lightVibrantSwatch!!.rgb)
+                            when {
+                                darkVibrantSwatch != null -> {
+                                    imageCardView.setCardBackgroundColor(darkVibrantSwatch.rgb)
+                                }
+                                dominantSwatch != null -> {
+                                    imageCardView.setCardBackgroundColor(dominantSwatch.rgb)
+                                }
+                                else -> {
+                                    imageCardView.setCardBackgroundColor(lightVibrantSwatch!!.rgb)
+                                }
                             }
                             val vibrant = palette.dominantSwatch
                             if(vibrant != null) {

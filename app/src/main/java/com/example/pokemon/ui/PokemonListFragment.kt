@@ -8,19 +8,22 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import com.example.pokemon.R
+import com.example.pokemon.adapters.IOnItemClickListener
 import com.example.pokemon.adapters.PokemonListAdapter
 import com.example.pokemon.databinding.FragmentPokemonListBinding
 import com.example.pokemon.utils.Resource
 import com.example.pokemon.viewmodels.PokemonViewModel
 
-class PokemonListFragment : Fragment() {
+class PokemonListFragment : Fragment(), IOnItemClickListener {
 
     lateinit var viewModel: PokemonViewModel
     lateinit var pokemonListAdapter: PokemonListAdapter
 
     private var _binding: FragmentPokemonListBinding? = null
-    private val binding get() = _binding!!
+    private val binding get() = _binding!! 
 
     lateinit var progressBar: ProgressBar
 
@@ -71,7 +74,7 @@ class PokemonListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        pokemonListAdapter = PokemonListAdapter()
+        pokemonListAdapter = PokemonListAdapter(this)
         val pokemonRecyclerView = binding.pokemonRecyclerview
         pokemonRecyclerView.adapter = pokemonListAdapter
         pokemonRecyclerView.layoutManager =  GridLayoutManager(activity, 2)
@@ -80,5 +83,11 @@ class PokemonListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    override fun onItemClick(position: Int) {
+        val pokemonNumber = position + 1
+        val action = PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(pokemonNumber)
+        findNavController().navigate(action)
     }
 }

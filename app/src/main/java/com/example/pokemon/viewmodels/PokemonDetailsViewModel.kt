@@ -3,30 +3,25 @@ package com.example.pokemon.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.pokemon.models.PokemonResponse
+import com.example.pokemon.models.PokemonDetails
 import com.example.pokemon.repositories.PokemonRepository
 import com.example.pokemon.utils.Resource
 import kotlinx.coroutines.launch
 import retrofit2.Response
 
-class PokemonViewModel(
+class PokemonDetailsViewModel(
     val pokemonRepository: PokemonRepository
 ) : ViewModel() {
 
-    val allPokemon: MutableLiveData<Resource<PokemonResponse>> = MutableLiveData()
-    var limit = 30
+    val pokemonInfo: MutableLiveData<Resource<PokemonDetails>> = MutableLiveData()
 
-    init {
-        fetchPokemon(0)
+    private fun fetchPokemonDetails(pokemonId: Int) = viewModelScope.launch {
+        pokemonInfo.postValue(Resource.Loading())
+        val response = pokemonRepository.fetchPokemonDetails(pokemonId)
+        pokemonInfo.postValue(handlePokemonDetailsResponse(response))
     }
 
-    private fun fetchPokemon(offset: Int) = viewModelScope.launch {
-        allPokemon.postValue(Resource.Loading())
-        val response = pokemonRepository.fetchPokemon(offset, limit)
-        allPokemon.postValue(handlePokemonResponse(response))
-    }
-
-    private fun handlePokemonResponse(response: Response<PokemonResponse>) : Resource<PokemonResponse> {
+    private fun handlePokemonDetailsResponse(response: Response<PokemonDetails>) : Resource<PokemonDetails> {
         if(response.isSuccessful) {
             response.body()?.let { responseResponse ->
                 return Resource.Success(responseResponse)
